@@ -1,0 +1,61 @@
+---
+title: "Untitled"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(Lahman)
+library(sqldf)
+library(ggplot2)
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+query<-"SELECT salary
+FROM Salaries"
+
+result<-sqldf(query)
+
+ggplot()+
+  geom_histogram(data=result,aes(x=salary),bins=20)
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+query<-"SELECT yearID,avg(salary) AS avgsalary
+FROM Salaries
+GROUP BY yearID"
+
+result<-sqldf(query)
+
+ggplot()+
+  geom_line(data=result,aes(x=yearID,y=avgsalary))+
+  geom_point(data=result,aes(x=yearID,y=avgsalary))
+```
+
+### Chart C
+
+```{r}
+query<-"SELECT salary,HR
+FROM Salaries INNER JOIN Batting
+ON Salaries.playerID=Batting.playerID
+WHERE HR>=10"
+
+result<-sqldf(query)
+
+ggplot()+
+  geom_point(data=result,aes(x=salary,y=HR))
+```
+
